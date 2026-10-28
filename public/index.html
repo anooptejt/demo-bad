@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payments Console</title>
+<style>
+:root{--bg:#f3f5f7;--card:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--line:#dde1e6;--accent:#b45f06;--soft:#fbeedd;--good:#1b7f4c;--bad:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#14171a;--card:#1c2024;--ink:#f1f1ef;--ink2:#a9a8a3;--line:#2c3237;--accent:#e8a14a;--soft:#3a2a14;--good:#4cc38a;--bad:#e5736a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;display:grid;place-items:center;padding:24px}
+main{width:min(720px,100%)}
+.brand{font-weight:700;color:var(--accent);margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+.ver{font-size:72px;font-weight:800;line-height:1;margin:6px 0 4px;color:var(--accent)}
+.banner{background:var(--soft);border-radius:12px;padding:12px 16px;margin:16px 0}
+.status{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--ink2)}
+.ok .dot{background:var(--good)}.down .dot{background:var(--bad)}
+dl{display:grid;grid-template-columns:120px 1fr;gap:6px 16px;margin:20px 0 0;font-size:14px}
+dt{color:var(--ink2)}dd{margin:0;font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand" id="app">Loading&hellip;</div>
+  <div class="card">
+    <div class="status" id="status"><span class="dot"></span><span id="statustext">Checking</span></div>
+    <div class="ver" id="version">&nbsp;</div>
+    <div>Running version</div>
+    <div class="banner" id="banner"></div>
+    <dl>
+      <dt>Build</dt><dd id="build"></dd>
+      <dt>Pod</dt><dd id="pod"></dd>
+      <dt>Started</dt><dd id="started"></dd>
+    </dl>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+async function load() {
+  const info = await (await fetch('/api/info')).json();
+  document.title = info.title;
+  $('app').textContent = info.title + ' (' + info.app + ')';
+  $('version').textContent = 'v' + info.version;
+  $('banner').textContent = info.banner;
+  $('build').textContent = info.build;
+  $('pod').textContent = info.pod;
+  $('started').textContent = info.startedAt;
+}
+async function poll() {
+  const s = $('status');
+  try {
+    const r = await fetch('/healthz', { cache: 'no-store' });
+    s.className = 'status ' + (r.ok ? 'ok' : 'down');
+    $('statustext').textContent = r.ok ? 'Healthy' : 'Unhealthy';
+  } catch {
+    s.className = 'status down';
+    $('statustext').textContent = 'Unreachable';
+  }
+}
+load().catch(() => { $('app').textContent = 'Could not load app info'; });
+poll(); setInterval(poll, 3000);
+</script>
+</body>
+</html>
