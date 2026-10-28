@@ -7,7 +7,15 @@ const path = require('path');
 const pkg = require('./package.json');
 
 const PORT = Number(process.env.PORT) || 8080;
-const BANNER = 'Payments console is live.';
+// 1.1.0 added a payments client that needs a gateway URL. It is not set in the
+// deployment, so the process exits at startup.
+const GATEWAY_URL = process.env.PAYMENT_GATEWAY_URL;
+if (!GATEWAY_URL) {
+  console.error('FATAL: PAYMENT_GATEWAY_URL is not set; the payments client cannot initialise');
+  process.exit(1);
+}
+
+const BANNER = 'New: refunds are here.';
 
 const info = {
   title: 'Payments Console',

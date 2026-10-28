@@ -1,6 +1,6 @@
 {
   "name": "demo-bad",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sample payments console used to demo onboarding and self-healing with ZenseAI AIDLC Centre. The next release (1.1.0) crashes at startup.",
   "main": "server.js",
   "scripts": {
