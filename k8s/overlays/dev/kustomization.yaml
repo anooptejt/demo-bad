@@ -5,4 +5,4 @@ resources:
   - ../../base
 images:
   - name: quay.io/anoop_thotapalli/demo-bad
-    newTag: pending-ci
+    newTag: 1.0.0-35d90f2
