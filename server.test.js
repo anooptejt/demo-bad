@@ -17,7 +17,7 @@ function get(port, path) {
 
 test('serves health and info', async () => {
   const port = 18080;
-  const child = spawn(process.execPath, ['server.js'], { env: { ...process.env, PORT: String(port) } });
+  const child = spawn(process.execPath, ['server.js'], { env: { ...process.env, PORT: String(port), PAYMENT_GATEWAY_URL: 'http://localhost:9' } });
   try {
     for (let i = 0; i < 20; i++) {
       try { await get(port, '/healthz'); break; } catch { await new Promise(r => setTimeout(r, 100)); }
